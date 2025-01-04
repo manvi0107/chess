@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-Player Chess Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .chess-board {
+            width: 400px;
+            height: 400px;
+            border: 4px solid #2c3e50;
+            border-radius: 10px;
+            background-color: #ecf0f1;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        #moveHistory {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Two-Player Chess Game</h1>
+        <div id="board1" class="chess-board"></div>
+        <button id="startBtn">Start New Game</button>
+        <button id="clearBtn">Clear Game</button>
+        <div id="moveHistory"></div>
+    </div>
+
+    <!-- Include Chessboard.js and Chess.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://unpkg.com/chess.js"></script>
+
+    <script>
+        var board = Chessboard('board1', {
+            draggable: true,
+            dropOffBoard: 'trash',
+            sparePieces: true,
+            pieceTheme: 'https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/img/chesspieces/wikipedia/{piece}.png'
+        });
+
+        var chess = new Chess();
+
+        function startGame() {
+            chess.reset();
+            board.start();
+            renderMoveHistory();
+        }
+
+        function clearGame() {
+            chess.clear();
+            board.clear();
+            renderMoveHistory();
+        }
+
+        function renderMoveHistory() {
+            var moves = chess.history();
+            var historyElement = document.getElementById('moveHistory');
+            historyElement.innerHTML = moves.join(' ');
+        }
+
+        board.on('drop', function (source, target) {
+            var move = chess.move({ from: source, to: target });
+            renderMoveHistory();
+            renderBoard();
+
+            if (move === null) {
+                return 'snapback';
+            }
+        });
+
+        function renderBoard() {
+            board.position(chess.fen());
+        }
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('clearBtn').addEventListener('click', clearGame);
+
+        startGame();
+    </script>
+</body>
+</html>
+
